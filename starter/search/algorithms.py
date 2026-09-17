@@ -1,37 +1,56 @@
 import heapq
 import math
 
-class PathTracker:
-    def __init__(self, parent_path_and_cost):
-        self.path = parent_path_and_cost[0]
-        self.cost = parent_path_and_cost[1]
-
-    def add2path(self, node):
-        self.path.append(node)
-
-    def increase_cost(self, cost):
-        self.cost += cost
-
-    def get_path_and_cost(self):
-        return self.path, self.cost
-
-    def get_first_node(self):
-        return self.path[-1]
-
 class Dijkstra:
     def __init__(self, gridded_map):
-        self.map = gridded_map
-        self.frontier = []
-        self.closed_list = []
+        self.gridded_map = gridded_map  # a Map instance
+        self.frontier: list[State] = []
+        self.closed_list: dict[int, State] = {}
 
     def search(self, start, goal):
-        current = PathTracker((start, 0))
+        current: State = start
+        self.closed_list[current.state_hash()] = current
         while current != goal:
+            # get children and heappush qualified to frontier (set cost and parent)
+            children = self.gridded_map.successors(current)
+            for child in children:
+                if not self.in_closed_list(child):
+                    child.set_cost(child.get_g())
+                    child.set_parent(current)
+                    heapq.heappush(self.frontier, child)
+            
 
+            # pop child from frontier and check if it is already in the closed list; if yes, pop again
+            current = heapq.heappop(self.frontier)
+            while self.in_closed_list(current):
+                current = heapq.heappop(self.frontier)
+
+            # add current to closed list
+            self.closed_list[current.state_hash()] = current
+
+        # current == goal now
+        path = []
+        cost = current.get_cost()
+        expanded = 0
+        while not(current.get_parent() is None):
+            path.append(current)
+            expanded += 1
+            current = current.get_parent()
+
+        # return path, cost, expanded
         return path, cost, expanded
 
+
+    def in_closed_list(self, child_state):
+        child_hash = child_state.state_hash()
+        for state_hash in self.closed_list:
+            if state_hash == child_hash:
+                return True
+        return False
+
     def get_closed_data(self):
-        return self.closed
+        return self.closed_list
+    
 
 class State:
     """
