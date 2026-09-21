@@ -1,5 +1,5 @@
 import time
-from search.algorithms import Dijkstra, State
+from search.algorithms import Dijkstra, AStar, State
 from search.map import Map
 import getopt
 import sys
@@ -35,7 +35,7 @@ def main():
                               
     gridded_map = Map("dao-map/brc000d.map")
     dijkstra = Dijkstra(gridded_map)
-    # astar = AStar(gridded_map)
+    astar = AStar(gridded_map)
     
     nodes_expanded_dijkstra = []  
     nodes_expanded_astar = []
@@ -61,7 +61,7 @@ def main():
         goal = goal_states[i]
     
         time_start = time.time()
-        path, cost, expanded_diskstra = dijkstra.search(start, goal) # Replace the None, None, None with a call to Dijkstra's algorithm
+        path, cost, expanded_diskstra = dijkstra.search(start, goal) 
         time_end = time.time()
         nodes_expanded_dijkstra.append(expanded_diskstra)
         time_dijkstra.append(time_end - time_start)
@@ -80,7 +80,7 @@ def main():
         goal = goal_states[i]
     
         time_start = time.time()
-        path, cost, expanded_astar = None, None, None # Replace the None, None, None with a call to A*
+        path, cost, expanded_astar = astar.search(start, goal)
         time_end = time.time()
 
         nodes_expanded_astar.append(expanded_astar)
@@ -97,7 +97,7 @@ def main():
             print()
 
         gridded_map.plot_map(dijkstra.get_closed_data(), start, goal, 'solution-maps/dijkstra_' + str(i + 1))
-        # gridded_map.plot_map(astar.get_closed_data(), start, goal, 'solution-maps/astar_' + str(i + 1))
+        gridded_map.plot_map(astar.get_closed_data(), start, goal, 'solution-maps/astar_' + str(i + 1))
 
 
     from search.plot_results import PlotResults

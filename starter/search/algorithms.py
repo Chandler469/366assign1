@@ -1,5 +1,4 @@
 import heapq
-import math
 
 class Dijkstra:
     def __init__(self, gridded_map):
@@ -8,21 +7,29 @@ class Dijkstra:
         self.closed_list: dict[int, State] = {}
 
     def search(self, start, goal):
+        self.frontier = []
+        self.closed_list = {}
         current: State = start
         self.closed_list[current.state_hash()] = current
+
         while current != goal:
             # get children and heappush qualified to frontier (set cost and parent)
             children = self.gridded_map.successors(current)
             for child in children:
-                if not self.in_closed_list(child):
+                if child.state_hash() not in self.closed_list:
                     child.set_cost(child.get_g())
                     child.set_parent(current)
                     heapq.heappush(self.frontier, child)
-            
+
+            # if frontier is empty, the problem has not solution
+            if not self.frontier:
+                return None, -1, len(self.closed_list)
 
             # pop child from frontier and check if it is already in the closed list; if yes, pop again
             current = heapq.heappop(self.frontier)
-            while self.in_closed_list(current):
+            while current.state_hash() in self.closed_list:
+                if not self.frontier:
+                    return None, -1, len(self.closed_list)
                 current = heapq.heappop(self.frontier)
 
             # add current to closed list
@@ -31,22 +38,68 @@ class Dijkstra:
         # current == goal now
         path = []
         cost = current.get_cost()
-        expanded = 0
+        expanded = len(self.closed_list)
         while not(current.get_parent() is None):
             path.append(current)
-            expanded += 1
             current = current.get_parent()
 
         # return path, cost, expanded
-        return path, cost, expanded
+        return path.reverse(), cost, expanded
 
+    def get_closed_data(self):
+        return self.closed_list
 
-    def in_closed_list(self, child_state):
-        child_hash = child_state.state_hash()
-        for state_hash in self.closed_list:
-            if state_hash == child_hash:
-                return True
-        return False
+class AStar:
+    def __init__(self, gridded_map):
+        self.gridded_map = gridded_map
+        self.frontier: list[State] = []
+        self.closed_list: dict[int, State] = {}
+
+    def search(self, start, goal):
+        g_x = goal.get_x()
+        g_y = goal.get_y()
+
+        self.frontier = []
+        self.closed_list = {}
+        current: State = start
+        self.closed_list[current.state_hash()] = current
+
+        while current != goal:
+            # get children and heappush qualified to frontier (set cost and parent)
+            children = self.gridded_map.successors(current)
+            for child in children:
+                if child.state_hash() not in self.closed_list:
+                    d_x = abs(child.get_x() - g_x)
+                    d_y = abs(child.get_y() - g_y)
+                    h = 1.5 * min(d_x, d_y) + abs(d_x - d_y)
+                    child.set_cost(child.get_g() + h)
+                    child.set_parent(current)
+                    heapq.heappush(self.frontier, child)
+
+            # if frontier is empty, the problem has not solution
+            if not self.frontier:
+                return None, -1, len(self.closed_list)
+
+            # pop child from frontier and check if it is already in the closed list; if yes, pop again
+            current = heapq.heappop(self.frontier)
+            while current.state_hash() in self.closed_list:
+                if not self.frontier:
+                    return None, -1, len(self.closed_list)
+                current = heapq.heappop(self.frontier)
+
+            # add current to closed list
+            self.closed_list[current.state_hash()] = current
+
+        # current == goal now
+        path = []
+        cost = current.get_cost()
+        expanded = len(self.closed_list)
+        while not(current.get_parent() is None):
+            path.append(current)
+            current = current.get_parent()
+
+        # return path, cost, expanded
+        return path.reverse(), cost, expanded
 
     def get_closed_data(self):
         return self.closed_list
