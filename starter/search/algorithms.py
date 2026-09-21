@@ -50,8 +50,9 @@ class Dijkstra:
         return self.closed_list
 
 class AStar:
-    def __init__(self, gridded_map):
+    def __init__(self, gridded_map, heuristic_multiplier = 1):
         self.gridded_map = gridded_map
+        self.heuristic_multiplier = heuristic_multiplier
         self.frontier: list[State] = []
         self.closed_list: dict[int, State] = {}
 
@@ -71,7 +72,7 @@ class AStar:
                 if child.state_hash() not in self.closed_list:
                     d_x = abs(child.get_x() - g_x)
                     d_y = abs(child.get_y() - g_y)
-                    h = 1.5 * min(d_x, d_y) + abs(d_x - d_y)
+                    h = 1.5 * min(d_x, d_y) + abs(d_x - d_y) * self.heuristic_multiplier
                     child.set_cost(child.get_g() + h)
                     child.set_parent(current)
                     heapq.heappush(self.frontier, child)
