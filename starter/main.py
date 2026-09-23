@@ -109,16 +109,16 @@ def main():
         nodes_expanded_modified_astar.append(expanded_astar)
         time_modified_astar.append(time_end - time_start)
 
-        gridded_map.plot_map(dijkstra.get_closed_data(), start, goal, 'solution-maps/dijkstra_' + str(i + 1))
-        gridded_map.plot_map(astar.get_closed_data(), start, goal, 'solution-maps/astar_' + str(i + 1))
-        gridded_map.plot_map(modified_astar.get_closed_data(), start, goal, 'solution-maps/modified_astar_' + str(i + 1))
+        # gridded_map.plot_map(dijkstra.get_closed_data(), start, goal, 'solution-maps/dijkstra_' + str(i + 1))
+        # gridded_map.plot_map(astar.get_closed_data(), start, goal, 'solution-maps/astar_' + str(i + 1))
+        # gridded_map.plot_map(modified_astar.get_closed_data(), start, goal, 'solution-maps/modified_astar_' + str(i + 1))
 
     from search.plot_results import PlotResults
     plotter = PlotResults()
     plotter.plot_results(nodes_expanded_astar, nodes_expanded_dijkstra, "Nodes Expanded (A*)", "Nodes Expanded (Dijkstra)", "nodes_expanded")
     plotter.plot_results(time_astar, time_dijkstra, "Running Time (A*)", "Running Time (Dijkstra)", "running_time")
-    plotter.plot_results(nodes_expanded_astar, nodes_expanded_modified_astar, "Nodes Expanded (A*)", "Nodes Expanded (Modified A*)", "nodes_expanded")
-    plotter.plot_results(time_astar, time_modified_astar, "Running Time (A*)", "Running Time (Modified A*)", "running_time")
+    # plotter.plot_results(nodes_expanded_astar, nodes_expanded_modified_astar, "Nodes Expanded (A*)", "Nodes Expanded (Modified A*)", "nodes_expanded")
+    # plotter.plot_results(time_astar, time_modified_astar, "Running Time (A*)", "Running Time (Modified A*)", "running_time")
 
 if __name__ == "__main__":
     main()
